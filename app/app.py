@@ -3,6 +3,7 @@ import json
 from PyQt5.QtWidgets import (QWidget, QApplication, QHBoxLayout, QTextEdit, QListWidgetItem,
                              QVBoxLayout, QLabel, QPushButton, QListView, QListView, QListWidget)
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIcon, QPixmap
+from PyQt5.QtCore import Qt
 
 PACKAGES_FILE = 'resources/packages.json'
 
@@ -40,7 +41,9 @@ class MainWidget(QWidget):
         self.itemIconLabel = QLabel(self)
 
         linksBox = QVBoxLayout()
+        linksBox.setAlignment(Qt.AlignRight)
         self.githubLinkLabel = QLabel(self)
+        self.githubLinkLabel.setAlignment(Qt.AlignRight)
         self.storeLinkLabel = QLabel(self)
         self.githubLinkLabel.setOpenExternalLinks(True)
         self.storeLinkLabel.setOpenExternalLinks(True)
