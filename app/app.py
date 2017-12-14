@@ -14,7 +14,7 @@ DESTINATION_FOLDER = '/opt'
 def get_software_objects():
     with open(PACKAGES_FILE, 'r') as f:
         content = json.load(f)
-    packages = {item['name']: item for item in content['packages']}
+    packages = {item['title']: item for item in content['packages']}
     return packages
 
 
@@ -91,8 +91,8 @@ class MainWidget(QWidget):
         self.descriptionText.setText(self.currentProduct['description_full'])
         self.itemLabel.setText(self.currentProduct['title'])
         self.itemIconLabel.setPixmap(QPixmap(self.currentProduct['icon_32x32']))
-        self.githubLinkLabel.setText(f"<a href='{self.currentProduct['github_link']}'>Github</a>")
-        self.storeLinkLabel.setText(f"<a href='{self.currentProduct['website_link']}'>PiSupply</a>")
+        self.githubLinkLabel.setText("<a href='{}'>Github</a>".format(self.currentProduct['github_link']))
+        self.storeLinkLabel.setText("<a href='{}'>PiSupply</a>".format(self.currentProduct['website_link']))
 
     def install(self, event):
         self.UISignals.installBeginSignal.emit()
@@ -101,7 +101,8 @@ class MainWidget(QWidget):
         install_process.start()
         install_process.join()
         for _ in range(queue.qsize()):
-            print(queue.get())
+            stdout, stderr = queue.get()
+            print("STDOUT: {}\nSTDERR: {}\n".format(stdout, stderr))
         QTimer.singleShot(1000, lambda: self.UISignals.installEndSignal.emit())
         # self.UISignals.installEndSignal.emit()
 
