@@ -3,13 +3,17 @@ from subprocess import Popen, PIPE
 from multiprocessing import Process, Queue
 
 
+class InstallerException(Exception):
+    pass
+
+
 def run_command(cmd_string, queue, cwd=None):
     proc = Popen(cmd_string, cwd=cwd, shell=True, stdout=PIPE, stderr=PIPE)
     proc.wait()
     print("RETURN CODE: " + str(proc.returncode))
     queue.put(proc.communicate())
     if proc.returncode != 0:
-        raise Exception("Command \"{}\" failed. Return code: {}".format(cmd_string, proc.returncode))
+        raise InstallerException("Command \"{}\" failed. Return code: {}".format(cmd_string, proc.returncode))
 
 
 def install_package(software_dict, queue, folder='/opt', callback=None):
@@ -34,7 +38,7 @@ def install_package(software_dict, queue, folder='/opt', callback=None):
         # 4. Run post-install commands
         for command in software_dict['post_install']:
             run_command(command, queue, cwd=destination)
-    except Exception as e:
+    except InstallerException as e:
         success = False
         print("Failed: {}".format(str(e)))
     if callable(callback):
