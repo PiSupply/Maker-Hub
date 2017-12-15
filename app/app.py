@@ -1,5 +1,6 @@
 import sys
 import json
+import threading
 from multiprocessing import Process, Queue
 from installer import install_package
 from PyQt5.QtWidgets import (QWidget, QApplication, QHBoxLayout, QTextEdit, QListWidgetItem,
@@ -32,6 +33,7 @@ class MainWidget(QWidget):
         self.setMinimumHeight(200)
 
         self.UISignals = UICommunication()
+        self.queue = Queue()
 
         hbox = QHBoxLayout()
 
@@ -50,15 +52,7 @@ class MainWidget(QWidget):
         self.itemLabel = QLabel(self)
         self.itemIconLabel = QLabel(self)
 
-        linksBox = QVBoxLayout()
-        linksBox.setAlignment(Qt.AlignRight)
-        self.githubLinkLabel = QLabel(self)
-        self.githubLinkLabel.setAlignment(Qt.AlignRight)
-        self.storeLinkLabel = QLabel(self)
-        self.githubLinkLabel.setOpenExternalLinks(True)
-        self.storeLinkLabel.setOpenExternalLinks(True)
-        linksBox.addWidget(self.githubLinkLabel)
-        linksBox.addWidget(self.storeLinkLabel)
+        linksBox = self._setupLinksBox()
 
         titleBox.addWidget(self.itemIconLabel)
         titleBox.addWidget(self.itemLabel)
@@ -69,16 +63,7 @@ class MainWidget(QWidget):
         self.descriptionText.setReadOnly(True)
         rightVBox.addWidget(self.descriptionText)
 
-        self.installBtn = QPushButton("Install", self)
-        self.installBtn.clicked.connect(self.install)
-        self.UISignals.installBeginSignal.connect(self.disableUI)
-        self.UISignals.installEndSignal.connect(self.enableUI)
-
-        self.pinoutBtn = QPushButton("Pinout", self)
-        btnBox = QHBoxLayout()
-        btnBox.addWidget(self.pinoutBtn)
-        btnBox.addWidget(self.installBtn)
-        # btnBox.addStretch(1)
+        btnBox = self._setupBtnBox()
         rightVBox.addLayout(btnBox)
 
         hbox.addLayout(rightVBox)
@@ -96,14 +81,9 @@ class MainWidget(QWidget):
 
     def install(self, event):
         self.UISignals.installBeginSignal.emit()
-        queue = Queue()
-        install_process = Process(target=install_package, args=[self.currentProduct, queue, DESTINATION_FOLDER])
+        install_process = Process(target=install_package, args=[self.currentProduct, self.queue, DESTINATION_FOLDER, self.UISignals.installEndSignal.emit])
         install_process.start()
-        install_process.join()
-        for _ in range(queue.qsize()):
-            stdout, stderr = queue.get()
-            print("STDOUT: {}\nSTDERR: {}\n".format(stdout, stderr))
-        QTimer.singleShot(1000, lambda: self.UISignals.installEndSignal.emit())
+        # QTimer.singleShot(1000, lambda: self.UISignals.installEndSignal.emit())
         # self.UISignals.installEndSignal.emit()
 
     def _populateSoftwareList(self, listWidget):
@@ -112,9 +92,36 @@ class MainWidget(QWidget):
             item.setText(softDict['title'])
             item.setIcon(QIcon(softDict['icon_16x16']))
 
+    def _setupLinksBox(self):
+        linksBox = QVBoxLayout()
+        linksBox.setAlignment(Qt.AlignRight)
+        self.githubLinkLabel = QLabel(self)
+        self.githubLinkLabel.setAlignment(Qt.AlignRight)
+        self.storeLinkLabel = QLabel(self)
+        self.githubLinkLabel.setOpenExternalLinks(True)
+        self.storeLinkLabel.setOpenExternalLinks(True)
+        linksBox.addWidget(self.githubLinkLabel)
+        linksBox.addWidget(self.storeLinkLabel)
+        return linksBox
+
+    def _setupBtnBox(self):
+        self.installBtn = QPushButton("Install", self)
+        self.installBtn.clicked.connect(self.install)
+        self.UISignals.installBeginSignal.connect(self.disableUI)
+        self.UISignals.installEndSignal.connect(self.enableUI)
+
+        self.pinoutBtn = QPushButton("Pinout", self)
+        btnBox = QHBoxLayout()
+        btnBox.addWidget(self.pinoutBtn)
+        btnBox.addWidget(self.installBtn)
+        return btnBox
+
     def enableUI(self):
         self.installBtn.setText("Install")
         self.installBtn.setDisabled(False)
+        for _ in range(self.queue.qsize()):
+            stdout, stderr = self.queue.get()
+            print("STDOUT: {}\nSTDERR: {}\n".format(stdout, stderr))
         print("Enable UI")
 
     def disableUI(self):
