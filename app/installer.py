@@ -1,19 +1,30 @@
 import os
+import logging
 from subprocess import Popen, PIPE
 from multiprocessing import Process, Queue
 
+logging.basicConfig(filename='makerhub.log', level=logging.DEBUG,
+                    format='%(asctime)-15s %(clientip)s %(user)-8s %(message)s')
+
 
 class InstallerException(Exception):
-    pass
+    returncode = None
+    stdout = None
+    stderr = None
 
 
 def run_command(cmd_string, queue, cwd=None):
     proc = Popen(cmd_string, cwd=cwd, shell=True, stdout=PIPE, stderr=PIPE)
     proc.wait()
     print("RETURN CODE: " + str(proc.returncode))
-    queue.put(proc.communicate())
+    logging.info("Return code: " + str(proc.returncode))
+    result = proc.communicate()
+    queue.put(result)
     if proc.returncode != 0:
-        raise InstallerException("Command \"{}\" failed. Return code: {}".format(cmd_string, proc.returncode))
+        exc = InstallerException("Command \"{}\" failed. Return code: {}".format(cmd_string, proc.returncode))
+        exc.returncode = proc.returncode
+        exc.stdout, exc.stderr = result
+        raise exc
 
 
 def install_package(software_dict, queue, folder='/opt', callback=None):
@@ -23,6 +34,7 @@ def install_package(software_dict, queue, folder='/opt', callback=None):
     }
     # 1. Install packages
     destination = os.path.join(folder, software_dict['name'])
+    logging.info("Installing to " + destination)
     success = True
     try:
         if software_dict['package_dependencies']:
@@ -40,10 +52,12 @@ def install_package(software_dict, queue, folder='/opt', callback=None):
             run_command(command, queue, cwd=destination)
     except InstallerException as e:
         success = False
+        logging.error("Failed command: {}. Return code: {}. stdout: {}. stderr: {}".format(str(e), e.returncode, e.stdout, e.stderr))
         print("Failed: {}".format(str(e)))
+    logging.info("Finished installing. Status: " + 'success' if success else 'failure')
     if callable(callback):
+        logging.info("Executing callback")
         callback(success)
-        # callback()
 
 
 if __name__ == '__main__':
@@ -51,6 +65,6 @@ if __name__ == '__main__':
     p = Process(target=run_command, args=["echo error 1>&2 && echo 1111111111", queue])
     p.start()
     p.join()
-    # print(run(["ls", "-l"], cwd='/opt/', stdout=PIPE))
+    logging.info("SUCCESS")
 
     print(queue.get())
