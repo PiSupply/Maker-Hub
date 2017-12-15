@@ -16,7 +16,7 @@
 			},
 			"package_dependencies": ["git"],
 			"interfaces": ["I2C"],
-			"post_install": ["cd /opt/flick", "python setup.py install"],
+			"post_install": ["cd /opt/flick/flick", "python setup.py install"],
 			"installation_script_link": "https://pisupp.ly/flickcode",
 			"website_link": "https://www.pi-supply.com/brand/pi-supply/flick/",
 			"github_link": "https://github.com/PiSupply/Flick"
