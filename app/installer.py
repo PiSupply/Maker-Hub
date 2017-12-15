@@ -6,7 +6,10 @@ from multiprocessing import Process, Queue
 def run_command(cmd_string, queue, cwd=None):
     proc = Popen(cmd_string, cwd=cwd, shell=True, stdout=PIPE, stderr=PIPE)
     proc.wait()
+    print("RETURN CODE: " + str(proc.returncode))
     queue.put(proc.communicate())
+    if proc.returncode != 0:
+        raise Exception("Command \"{}\" failed. Return code: {}".format(cmd_string, proc.returncode))
 
 
 def install_package(software_dict, queue, folder='/opt', callback=None):
@@ -16,22 +19,27 @@ def install_package(software_dict, queue, folder='/opt', callback=None):
     }
     # 1. Install packages
     destination = os.path.join(folder, software_dict['name'])
-    if software_dict['package_dependencies']:
-        packages_str = 'apt-get install -y ' + ' '.join(software_dict['package_dependencies'])
-        run_command(packages_str, queue)
-    # 2. Enable interfaces (I2C, SPI)
-    for interface in software_dict['interfaces']:
-        run_command(interface_commands.get(interface), queue)
-    # 3. Git clone to /opt/<name>
-    clone_cmd = "git clone --depth=1 {github_link}.git {destination}".format(
-        github_link=software_dict['github_link'], destination=destination.lower())
-    run_command(clone_cmd, queue)
-    # 4. Run post-install commands
-    for command in software_dict['post_install']:
-        run_command(command, queue, cwd=destination)
+    success = True
+    try:
+        if software_dict['package_dependencies']:
+            packages_str = 'apt-get install -y ' + ' '.join(software_dict['package_dependencies'])
+            run_command(packages_str, queue)
+        # 2. Enable interfaces (I2C, SPI)
+        for interface in software_dict['interfaces']:
+            run_command(interface_commands.get(interface), queue)
+        # 3. Git clone to /opt/<name>
+        clone_cmd = "git clone --depth=1 {github_link}.git {destination}".format(
+            github_link=software_dict['github_link'], destination=destination.lower())
+        run_command(clone_cmd, queue)
+        # 4. Run post-install commands
+        for command in software_dict['post_install']:
+            run_command(command, queue, cwd=destination)
+    except Exception as e:
+        success = False
+        print("Failed: {}".format(str(e)))
     if callable(callback):
-        print("CALLING")
-        callback()
+        callback(success)
+        # callback()
 
 
 if __name__ == '__main__':

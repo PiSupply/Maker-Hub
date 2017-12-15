@@ -81,10 +81,15 @@ class MainWidget(QWidget):
 
     def install(self, event):
         self.UISignals.installBeginSignal.emit()
-        install_process = Process(target=install_package, args=[self.currentProduct, self.queue, DESTINATION_FOLDER, self.UISignals.installEndSignal.emit])
+        install_process = threading.Thread(target=install_package, args=[
+            self.currentProduct, self.queue, DESTINATION_FOLDER, self._installEndCallback])
         install_process.start()
         # QTimer.singleShot(1000, lambda: self.UISignals.installEndSignal.emit())
         # self.UISignals.installEndSignal.emit()
+
+    def _installEndCallback(self, status):
+        self.UISignals.installEndSignal.emit()
+        print("SUCCESS: " + str(status))
 
     def _populateSoftwareList(self, listWidget):
         for name, softDict in self.softwareObjects.items():
@@ -117,11 +122,12 @@ class MainWidget(QWidget):
         return btnBox
 
     def enableUI(self):
-        self.installBtn.setText("Install")
-        self.installBtn.setDisabled(False)
         for _ in range(self.queue.qsize()):
             stdout, stderr = self.queue.get()
             print("STDOUT: {}\nSTDERR: {}\n".format(stdout, stderr))
+
+        self.installBtn.setText("Install")
+        self.installBtn.setDisabled(False)
         print("Enable UI")
 
     def disableUI(self):
