@@ -61,8 +61,8 @@ def install_package(software_dict, queue, folder='/opt', callback=None):
         run_command(clone_cmd, queue)
 
         # 4. Run post-install commands
-        for command in software_dict['post_install']:
-            run_command(command, queue, cwd=destination)
+        for step in software_dict['post_install']:
+            run_command(step['cmd'], queue, cwd=step.get('cwd'))
     except InstallerException as e:
         success = False
         shutil.rmtree(destination, ignore_errors=True)  # Remove git destination folder
