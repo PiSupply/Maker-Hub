@@ -10,6 +10,8 @@ from PyQt5.QtCore import Qt, pyqtSignal, QObject, QTimer, QSize
 
 PACKAGES_FILE = 'resources/packages.json'
 DESTINATION_FOLDER = '/opt'
+DEFAULT_ICON_32_PATH = 'resources/media/pi-supply-logo-32x32.png'
+DEFAULT_ICON_16_PATH = 'resources/media/pi-supply-logo-16x16.png'
 
 
 def get_software_objects():
@@ -78,7 +80,7 @@ class MainWidget(QMainWindow):
         self.currentProduct = self.softwareObjects[curr.text()]
         self.descriptionText.setText(self.currentProduct['description_full'])
         self.itemLabel.setText(self.currentProduct['title'])
-        self.itemIconLabel.setPixmap(QPixmap(self.currentProduct['icon_32x32']))
+        self.itemIconLabel.setPixmap(QPixmap(self.currentProduct.get('icon_32x32', DEFAULT_ICON_32_PATH)))
         self.githubLinkLabel.setText("<a href='{}'>Github</a>".format(self.currentProduct['github_link']))
         self.storeLinkLabel.setText("<a href='{}'>PiSupply</a>".format(self.currentProduct['website_link']))
 
@@ -99,7 +101,7 @@ class MainWidget(QMainWindow):
         for name, softDict in self.softwareObjects.items():
             item = QListWidgetItem(listWidget)
             item.setText(softDict['title'])
-            item.setIcon(QIcon(softDict['icon_16x16']))
+            item.setIcon(QIcon(softDict.get('icon_16x16', DEFAULT_ICON_16_PATH)))
 
     def _setupLinksBox(self):
         linksBox = QVBoxLayout()
