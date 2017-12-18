@@ -4,8 +4,7 @@ import shutil
 from subprocess import Popen, PIPE
 from multiprocessing import Process, Queue
 
-logging.basicConfig(filename='makerhub.log', level=logging.DEBUG,
-                    format='%(asctime)-15s %(clientip)s %(user)-8s %(message)s')
+logging.basicConfig(filename='makerhub.log', level=logging.DEBUG)
 
 
 class InstallerException(Exception):
