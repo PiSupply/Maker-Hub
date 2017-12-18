@@ -6,7 +6,7 @@ from installer import install_package
 from PyQt5.QtWidgets import (QWidget, QApplication, QHBoxLayout, QTextEdit, QListWidgetItem,
                              QVBoxLayout, QLabel, QPushButton, QListView, QListView, QListWidget)
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIcon, QPixmap
-from PyQt5.QtCore import Qt, pyqtSignal, QObject, QTimer
+from PyQt5.QtCore import Qt, pyqtSignal, QObject, QTimer, QSize
 
 PACKAGES_FILE = 'resources/packages.json'
 DESTINATION_FOLDER = '/opt'
@@ -92,6 +92,7 @@ class MainWidget(QWidget):
         print("SUCCESS: " + str(status))
 
     def _populateSoftwareList(self, listWidget):
+        listWidget.setIconSize(QSize(16, 16))
         for name, softDict in self.softwareObjects.items():
             item = QListWidgetItem(listWidget)
             item.setText(softDict['title'])

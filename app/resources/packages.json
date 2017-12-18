@@ -5,7 +5,7 @@
 			"title": "Flick",
 			"description_short": "Swipe, tap or flick your wrist to control your Raspberry Pi with Flick!",
 			"description_full": "Swipe, tap or flick your wrist to control your Raspberry Pi with Flick!\n\nFlick is a range of  3D tracking and gesture boards for the Raspberry Pi, Pi Zero and I2C devices. These boards let you control the Raspberry Pi computer as if by magic! It uses technology that enables the PCB to detect your gestures from up to 15cm away in 3D space. Draw a circle with your hand – it will track it.\n\nPlug and play functionality allows you to get up and running within minutes. Use our software libraries (complete with one line installer) to fully explore what you can do the boards. Control your computer, TV, music system and more with your hands. Fully CE and FCC tested and approved.\n\nSwipe, tap or flick your wrist to control your Raspberry Pi with Flick!\n\nFlick is a range of 3D tracking and gesture boards for the Raspberry Pi, Pi Zero and I2C devices. These boards let you control the Raspberry Pi computer as if by magic! It uses technology that enables the PCB to detect your gestures from up to 15cm away in 3D space. Draw a circle with your hand – it will track it.\n\nPlug and play functionality allows you to get up and running within minutes. Use our software libraries (complete with one line installer) to fully explore what you can do the boards. Control your computer, TV, music system and more with your hands. Fully CE and FCC tested and approved.",
-			"icon_16x16": "resources/media/test_icon_16x16.png",
+			"icon_16x16": "resources/media/flick.png",
 			"icon_32x32": "resources/media/test_icon_32x32.png",
 			"icon_full": "resources/media/test_icon_full.png",
 			"requirements": {
@@ -26,7 +26,7 @@
 			"title": "JustBoom",
 			"description_short": "JustBoom – Affordable, High Quality Audio for Everyone",
 			"description_full": "Why high quality audio?\n\nTen years ago, MP3 players revolutionised the role music played in our lives. The MP3 was a form of audio that could allow thousands of songs to be loaded onto a single portable player. Rather than needing hundreds of discs and vinyls, we could carry our entire music library with us to listen to anytime, anywhere, at an affordable price. But we abandoned the true quality of high definition music.\n\nWhy JustBoom?\n\nYour current headphones or speakers, no matter what they cost, can only ever sound as good as the files you are playing through them. The MP3 is a digitally compressed audio format. They sacrifice musical fidelity for more compact storage. They take the raw music of the studio and shrink it just enough to satisfy the storage limitation of the past, while still keeping the song recognisable. The MP3 was the favoured form of music to package into the black-box players that have dominated the last decade.\n\nWelcome to the bright new world of affordable high definition audio with JustBoom!\n\nThis same decade has driven a significant drop in the price of storage, and advancements in cloud and audio streaming technology. There are accessible forms of music available that don’t sacrifice quality – they take the raw recorded analogue signal, and convert it to a digital format. All you need is a modern device to play them through your sound system, so you can truly experience music as you are meant to.",
-			"icon_16x16": "resources/media/test_icon_16x16.png",
+			"icon_16x16": "resources/media/justboom.png",
 			"icon_32x32": "resources/media/test_icon_32x32.png",
 			"icon_full": "resources/media/test_icon_full.png",
 			"requirements": {
@@ -47,7 +47,7 @@
 			"title": "PiJuice",
 			"description_short": "A Portable Power Platform For Every Raspberry Pi",
 			"description_full": "As one of the smallest systems around there are so many amazing things you could do with the Raspberry Pi if it was self-powered and portable. Introducing PiJuice! A fully uninterruptable power supply that will always keep your Raspberry Pi powered.",
-			"icon_16x16": "resources/media/test_icon_16x16.png",
+			"icon_16x16": "resources/media/pijuice.png",
 			"icon_32x32": "resources/media/test_icon_32x32.png",
 			"icon_full": "resources/media/test_icon_full.png",
 			"requirements": {
@@ -68,7 +68,7 @@
 			"title": "PaPiRus",
 			"description_short": "Raspberry Pi ePaper / eInk screen HAT module",
 			"description_full": "PaPiRus is a Raspberry Pi ePaper / eInk screen HAT module with screens ranging from 1.44″ to 2.7″ in size. PaPiRus was originally launched on Kickstarter.\n\nWe have been working with Pervasive Displays to bring to market a HAT module for the Raspberry Pi that is capable of driving ePaper displays of various sizes with ease, making use of their existing open source RePaper codebase and examples.",
-			"icon_16x16": "resources/media/test_icon_16x16.png",
+			"icon_16x16": "resources/media/papirus.png",
 			"icon_32x32": "resources/media/test_icon_32x32.png",
 			"icon_full": "resources/media/test_icon_full.png",
 			"requirements": {
@@ -89,7 +89,7 @@
 			"title": "BrightPi",
 			"description_short": "The Bright-Pi is a small little board based around the Semtech SC620 that powers 4 white LEDs and 8 infrared ones.",
 			"description_full": "The Bright-Pi is a small little board based around the Semtech SC620 that powers 4 white LEDs and 8 infrared ones.",
-			"icon_16x16": "resources/media/test_icon_16x16.png",
+			"icon_16x16": "resources/media/brightpi.png",
 			"icon_32x32": "resources/media/test_icon_32x32.png",
 			"icon_full": "resources/media/test_icon_full.png",
 			"requirements": {
