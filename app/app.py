@@ -1,10 +1,10 @@
 import sys
 import json
 import threading
-from multiprocessing import Process, Queue
+import queue
 from installer import install_package
 from PyQt5.QtWidgets import (QWidget, QApplication, QHBoxLayout, QTextEdit, QListWidgetItem,
-                             QVBoxLayout, QLabel, QPushButton, QListView, QListView, QListWidget)
+                             QVBoxLayout, QLabel, QPushButton, QListWidget, QMainWindow)
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIcon, QPixmap
 from PyQt5.QtCore import Qt, pyqtSignal, QObject, QTimer, QSize
 
@@ -24,16 +24,17 @@ class UICommunication(QObject):
     installEndSignal = pyqtSignal()
 
 
-class MainWidget(QWidget):
+class MainWidget(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Pi-Supply Maker Hub")
         self.setGeometry(300, 300, 500, 500)
         self.setMinimumWidth(400)
         self.setMinimumHeight(200)
+        self.statusBar()
 
         self.UISignals = UICommunication()
-        self.queue = Queue()
+        self.queue = queue.Queue()
 
         hbox = QHBoxLayout()
 
@@ -67,7 +68,9 @@ class MainWidget(QWidget):
         rightVBox.addLayout(btnBox)
 
         hbox.addLayout(rightVBox)
-        self.setLayout(hbox)
+        self.mainWidget = QWidget()
+        self.mainWidget.setLayout(hbox)
+        self.setCentralWidget(self.mainWidget)
 
         self.show()
 
@@ -129,12 +132,12 @@ class MainWidget(QWidget):
 
         self.installBtn.setText("Install")
         self.installBtn.setDisabled(False)
-        print("Enable UI")
+        self.statusBar().showMessage("Installation finished")
 
     def disableUI(self):
         self.installBtn.setText("Installing...")
         self.installBtn.setDisabled(True)
-        print("Disable UI")
+        self.statusBar().showMessage("Installing " + self.currentProduct['title'])
 
 
 if __name__ == '__main__':

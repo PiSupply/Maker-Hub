@@ -40,13 +40,16 @@ def install_package(software_dict, queue, folder='/opt', callback=None):
         if software_dict['package_dependencies']:
             packages_str = 'apt-get install -y ' + ' '.join(software_dict['package_dependencies'])
             run_command(packages_str, queue)
+
         # 2. Enable interfaces (I2C, SPI, ...)
         for interface in software_dict['interfaces']:
             run_command(interface_commands.get(interface), queue)
+
         # 3. Git clone to /opt/<name>
         clone_cmd = "git clone --depth=1 {github_link}.git {destination}".format(
             github_link=software_dict['github_link'], destination=destination.lower())
         run_command(clone_cmd, queue)
+
         # 4. Run post-install commands
         for command in software_dict['post_install']:
             run_command(command, queue, cwd=destination)
@@ -55,6 +58,7 @@ def install_package(software_dict, queue, folder='/opt', callback=None):
         shutil.rmtree(destination, ignore_errors=True)  # Remove git destination folder
         logging.error("Failed command: {}. Return code: {}. stdout: {}. stderr: {}".format(str(e), e.returncode, e.stdout, e.stderr))
         print("Failed: {}".format(str(e)))
+
     logging.info("Finished installing. Status: " + 'success' if success else 'failure')
     if callable(callback):
         logging.info("Executing callback")
