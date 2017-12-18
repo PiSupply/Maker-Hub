@@ -2,16 +2,25 @@ import sys
 import json
 import threading
 import queue
+import platform
+import logging
+import socket
 from installer import install_package
 from PyQt5.QtWidgets import (QWidget, QApplication, QHBoxLayout, QTextEdit, QListWidgetItem,
-                             QVBoxLayout, QLabel, QPushButton, QListWidget, QMainWindow)
-from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIcon, QPixmap
-from PyQt5.QtCore import Qt, pyqtSignal, QObject, QTimer, QSize
+                             QVBoxLayout, QLabel, QPushButton, QListWidget, QMainWindow, qApp,
+                             QErrorMessage)
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtCore import Qt, pyqtSignal, QObject, QSize
 
 PACKAGES_FILE = 'resources/packages.json'
 DESTINATION_FOLDER = '/opt'
 DEFAULT_ICON_32_PATH = 'resources/media/pi-supply-logo-32x32.png'
 DEFAULT_ICON_16_PATH = 'resources/media/pi-supply-logo-16x16.png'
+MIN_SPACE = 50 * 2 ** 20  # 50 MB
+TEST_REMOTE_SERVER = 'www.google.com'
+SUPPORTED_DISTROS = ['raspbian', 'arch']  # TODO: Create a list of supporred distros
+
+logging.basicConfig(filename='maker-hub.log', level=logging.DEBUG)
 
 
 def get_software_objects():
@@ -24,11 +33,13 @@ def get_software_objects():
 class UICommunication(QObject):
     installBeginSignal = pyqtSignal()
     installEndSignal = pyqtSignal()
+    checksFailedSignal = pyqtSignal()
 
 
 class MainWidget(QMainWindow):
     def __init__(self):
         super().__init__()
+
         self.setWindowTitle("Pi-Supply Maker Hub")
         self.setGeometry(300, 300, 500, 500)
         self.setMinimumWidth(400)
@@ -74,7 +85,38 @@ class MainWidget(QMainWindow):
         self.mainWidget.setLayout(hbox)
         self.setCentralWidget(self.mainWidget)
 
+        self.UISignals.checksFailedSignal.connect(sys.exit)  # TODO: Proper way to quit
+
         self.show()
+        self.preLaunchCheck()
+
+    def preLaunchCheck(self):
+        distribution = platform.linux_distribution()
+        errorMessage = ''
+        success = True
+        # Check distribution
+        if distribution[0].lower() not in SUPPORTED_DISTROS:
+            success = False
+            errorMessage = 'Your OS is not supported'
+        # Check Python version
+        self.pythonVersion = platform.python_version()[0]
+        # Check available space
+        statvfs = platform.os.statvfs(DESTINATION_FOLDER)
+        if statvfs.f_bfree * statvfs.f_bsize < MIN_SPACE:
+            success = False
+            errorMessage = 'Not enough space. Minimum is {} MB'.format(MIN_SPACE / 10 ** 20)
+        # Check Internet connection
+        try:
+            socket.create_connection((socket.gethostbyname(TEST_REMOTE_SERVER), 80), 2)
+        except:
+            success = False
+            errorMessage = 'No Internet connection'
+        # Exit and show message if found problems
+        if not success:
+            err_dialog = QErrorMessage()
+            err_dialog.showMessage(errorMessage)
+            err_dialog.exec()
+            self.UISignals.checksFailedSignal.emit()
 
     def onItemChanged(self, curr, prev):
         self.currentProduct = self.softwareObjects[curr.text()]
