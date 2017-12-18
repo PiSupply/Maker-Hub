@@ -1,10 +1,20 @@
 import os
 import logging
 import shutil
+import platform
+import socket
+import shlex
 from subprocess import Popen, PIPE
 from multiprocessing import Process, Queue
 
 logging.basicConfig(filename='installer.log', level=logging.DEBUG)
+MIN_SPACE = 50 * 2 ** 20  # 50 MB
+TEST_REMOTE_SERVER = 'www.google.com'
+SUPPORTED_DISTROS = ['raspbian', 'arch']  # TODO: Create a list of supporred distros
+DESTINATION_FOLDER = '/opt'
+PACKAGES_FILE = 'resources/packages.json'
+DEFAULT_ICON_32_PATH = 'resources/media/pi-supply-logo-32x32.png'
+DEFAULT_ICON_16_PATH = 'resources/media/pi-supply-logo-16x16.png'
 
 
 class InstallerException(Exception):
@@ -14,7 +24,7 @@ class InstallerException(Exception):
 
 
 def run_command(cmd_string, queue, cwd=None):
-    proc = Popen(cmd_string, cwd=cwd, shell=True, stdout=PIPE, stderr=PIPE)
+    proc = Popen(shlex.quote(cmd_string), cwd=cwd, shell=True, stdout=PIPE, stderr=PIPE)
     proc.wait()
     print("RETURN CODE: " + str(proc.returncode))
     logging.info("Return code: " + str(proc.returncode))
@@ -63,6 +73,29 @@ def install_package(software_dict, queue, folder='/opt', callback=None):
     if callable(callback):
         logging.info("Executing callback")
         callback(success)
+
+
+def check_system():
+    # Returns (success: bool, error_message: string)
+    success = True
+    error_message = None
+    # Check distribution
+    distribution = platform.linux_distribution()
+    if distribution[0].lower() not in SUPPORTED_DISTROS:
+        success = False
+        error_message = 'Your OS is not supported'
+    # Check available space
+    statvfs = platform.os.statvfs(DESTINATION_FOLDER)
+    if statvfs.f_bfree * statvfs.f_bsize < MIN_SPACE:
+        success = False
+        error_message = 'Not enough space. Minimum is {} MB'.format(MIN_SPACE / 10 ** 20)
+    # Check Internet connection
+    try:
+        socket.create_connection((socket.gethostbyname(TEST_REMOTE_SERVER), 80), 2)
+    except:
+        success = False
+        error_message = 'No Internet connection'
+    return success, error_message
 
 
 if __name__ == '__main__':
