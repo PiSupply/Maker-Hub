@@ -1,5 +1,6 @@
 import os
 import logging
+import shutil
 from subprocess import Popen, PIPE
 from multiprocessing import Process, Queue
 
@@ -32,15 +33,15 @@ def install_package(software_dict, queue, folder='/opt', callback=None):
         'I2C': 'raspi-config nonint do_i2c 0',
         'SPI': 'raspi-config nonint do_spi 0',
     }
-    # 1. Install packages
     destination = os.path.join(folder, software_dict['name'])
     logging.info("Installing to " + destination)
     success = True
     try:
+        # 1. Install packages
         if software_dict['package_dependencies']:
             packages_str = 'apt-get install -y ' + ' '.join(software_dict['package_dependencies'])
             run_command(packages_str, queue)
-        # 2. Enable interfaces (I2C, SPI)
+        # 2. Enable interfaces (I2C, SPI, ...)
         for interface in software_dict['interfaces']:
             run_command(interface_commands.get(interface), queue)
         # 3. Git clone to /opt/<name>
@@ -52,6 +53,7 @@ def install_package(software_dict, queue, folder='/opt', callback=None):
             run_command(command, queue, cwd=destination)
     except InstallerException as e:
         success = False
+        shutil.rmtree(destination, ignore_errors=True)  # Remove git destination folder
         logging.error("Failed command: {}. Return code: {}. stdout: {}. stderr: {}".format(str(e), e.returncode, e.stdout, e.stderr))
         print("Failed: {}".format(str(e)))
     logging.info("Finished installing. Status: " + 'success' if success else 'failure')
