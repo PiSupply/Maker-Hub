@@ -15,6 +15,7 @@ DESTINATION_FOLDER = '/opt'
 PACKAGES_FILE = 'resources/packages.json'
 DEFAULT_ICON_32_PATH = 'resources/media/pi-supply-logo-32x32.png'
 DEFAULT_ICON_16_PATH = 'resources/media/pi-supply-logo-16x16.png'
+LOG_FILE = os.path.join(os.getcwd(), 'maker-hub.log')
 PYTHON_VERSION = platform.python_version()[0]
 
 
