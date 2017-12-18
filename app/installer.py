@@ -3,11 +3,11 @@ import logging
 import shutil
 import platform
 import socket
-import shlex
 from subprocess import Popen, PIPE
 from multiprocessing import Process, Queue
+# import shlex  # Can be used to secure shell input (with shell=True)
 
-logging.basicConfig(filename='installer.log', level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 MIN_SPACE = 50 * 2 ** 20  # 50 MB
 TEST_REMOTE_SERVER = 'www.google.com'
 SUPPORTED_DISTROS = ['raspbian', 'arch']  # TODO: Create a list of supporred distros
@@ -25,17 +25,16 @@ class InstallerException(Exception):
 
 
 def run_command(cmd_string, queue, cwd=None):
-    proc = Popen(shlex.quote(cmd_string).split(' '), cwd=cwd, stdout=PIPE, stderr=PIPE)
-    proc.wait()
-    print("RETURN CODE: " + str(proc.returncode))
-    logging.info("Return code: " + str(proc.returncode))
-    result = proc.communicate()
-    queue.put(result)
-    if proc.returncode != 0:
-        exc = InstallerException("Command \"{}\" failed. Return code: {}".format(cmd_string, proc.returncode))
-        exc.returncode = proc.returncode
-        exc.stdout, exc.stderr = result
-        raise exc
+    logging.debug(cmd_string)
+    try:
+        proc = Popen(cmd_string.split(' '), cwd=cwd, stdout=PIPE, stderr=PIPE)
+        proc.wait()
+    except Exception as e:
+        raise InstallerException("Command \"{}\" failed to run. Output: \"{}\"".format(cmd_string, str(e)))
+    else:
+        logging.info("Command \"{}\". Return code: {}".format(cmd_string, str(proc.returncode)))
+        result = proc.communicate()
+        queue.put(result)
 
 
 def install_package(software_dict, queue, folder='/opt', callback=None):
@@ -67,8 +66,7 @@ def install_package(software_dict, queue, folder='/opt', callback=None):
     except InstallerException as e:
         success = False
         shutil.rmtree(destination, ignore_errors=True)  # Remove git destination folder
-        logging.error("Failed command: {}. Return code: {}. stdout: {}. stderr: {}".format(str(e), e.returncode, e.stdout, e.stderr))
-        print("Failed: {}".format(str(e)))
+        logging.error(str(e))
 
     logging.info("Finished installing. Status: " + 'success' if success else 'failure')
     if callable(callback):

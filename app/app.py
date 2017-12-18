@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (QWidget, QApplication, QHBoxLayout, QTextEdit, QLis
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt, pyqtSignal, QObject, QSize
 
-logging.basicConfig(filename='maker-hub.log', level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 
 def get_software_objects():
@@ -107,7 +107,6 @@ class MainWidget(QMainWindow):
 
     def _installEndCallback(self, status):
         self.UISignals.installEndSignal.emit()
-        print("SUCCESS: " + str(status))
 
     def _populateSoftwareList(self, listWidget):
         listWidget.setIconSize(QSize(16, 16))
@@ -143,7 +142,7 @@ class MainWidget(QMainWindow):
     def enableUI(self):
         for _ in range(self.queue.qsize()):
             stdout, stderr = self.queue.get()
-            print("STDOUT: {}\nSTDERR: {}\n".format(stdout, stderr))
+            logging.debug("STDOUT: {}\nSTDERR: {}\n".format(stdout, stderr))
 
         self.installBtn.setText("Install")
         self.installBtn.setDisabled(False)
