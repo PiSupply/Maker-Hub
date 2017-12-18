@@ -81,8 +81,6 @@ class MainWidget(QMainWindow):
         self.preLaunchCheck()
 
     def preLaunchCheck(self):
-        # Check Python version
-        # self.pythonVersion = platform.python_version()[0]
         success, errorMessage = check_system()
         # Exit and show message if found problems
         if not success:

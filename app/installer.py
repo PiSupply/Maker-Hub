@@ -15,6 +15,7 @@ DESTINATION_FOLDER = '/opt'
 PACKAGES_FILE = 'resources/packages.json'
 DEFAULT_ICON_32_PATH = 'resources/media/pi-supply-logo-32x32.png'
 DEFAULT_ICON_16_PATH = 'resources/media/pi-supply-logo-16x16.png'
+PYTHON_VERSION = platform.python_version()[0]
 
 
 class InstallerException(Exception):
@@ -24,7 +25,7 @@ class InstallerException(Exception):
 
 
 def run_command(cmd_string, queue, cwd=None):
-    proc = Popen(shlex.quote(cmd_string), cwd=cwd, shell=True, stdout=PIPE, stderr=PIPE)
+    proc = Popen(shlex.quote(cmd_string).split(' '), cwd=cwd, stdout=PIPE, stderr=PIPE)
     proc.wait()
     print("RETURN CODE: " + str(proc.returncode))
     logging.info("Return code: " + str(proc.returncode))
