@@ -1,5 +1,16 @@
 from gui import start_app
+import argparse
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Installer for PiSupply products software")
+    parser.add_argument("--console", action="store_true")
+    args = parser.parse_args()
+    if args.console:
+        print("Console UI WIP")
+    else:
+        start_app()
 
 
 if __name__ == '__main__':
-    start_app()
+    parse_arguments()
