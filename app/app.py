@@ -1,4 +1,3 @@
-from gui import start_app
 import argparse
 
 
@@ -7,9 +6,11 @@ def parse_arguments():
     parser.add_argument("--console", action="store_true")
     args = parser.parse_args()
     if args.console:
-        print("Console UI WIP")
+        from console import start_app
     else:
-        start_app()
+        from gui import start_app
+
+    start_app()
 
 
 if __name__ == '__main__':

@@ -130,9 +130,9 @@ class MainWidget(QMainWindow):
         self.UISignals.installBeginSignal.connect(self.disableUI)
         self.UISignals.installEndSignal.connect(self.enableUI)
 
-        self.pinoutBtn = QPushButton("Pinout", self)
+        self.moreInfoBtn = QPushButton("More Info", self)
         btnBox = QHBoxLayout()
-        btnBox.addWidget(self.pinoutBtn)
+        btnBox.addWidget(self.moreInfoBtn)
         btnBox.addWidget(self.installBtn)
         return btnBox
 
