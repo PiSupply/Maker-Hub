@@ -3,9 +3,10 @@ import logging
 import shutil
 import platform
 import socket
+import json
 from subprocess import Popen, PIPE
 from multiprocessing import Process, Queue
-# import shlex  # Can be used to secure shell input (with shell=True)
+
 
 logging.basicConfig(level=logging.DEBUG)
 MIN_SPACE = 50 * 2 ** 20  # 50 MB
@@ -23,6 +24,13 @@ class InstallerException(Exception):
     returncode = None
     stdout = None
     stderr = None
+
+
+def get_software_objects():
+    with open(PACKAGES_FILE, 'r') as f:
+        content = json.load(f)
+    packages = {item['title']: item for item in content['packages']}
+    return packages
 
 
 def run_command(cmd_string, queue, cwd=None):
