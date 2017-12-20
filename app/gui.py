@@ -92,9 +92,9 @@ class MainWidget(QMainWindow):
 
     def install(self, event):
         self.UISignals.installBeginSignal.emit()
-        install_process = threading.Thread(target=install_package, args=[
+        install_thread = threading.Thread(target=install_package, args=[
             self.currentProduct, self.queue, DESTINATION_FOLDER, self._installEndCallback])
-        install_process.start()
+        install_thread.start()
         # QTimer.singleShot(1000, lambda: self.UISignals.installEndSignal.emit())
         # self.UISignals.installEndSignal.emit()
 
