@@ -1,9 +1,14 @@
+import threading
+import logging
+import queue
 import urwid
-from installer import get_software_objects
+from installer import get_software_objects, install_package, DESTINATION_FOLDER
+
+logging.basicConfig(level=logging.DEBUG)
 
 
-def menu_button(caption, callback):
-    button = urwid.Button(caption)
+def menu_button(caption, callback, package_name=None):
+    button = urwid.Button(caption, user_data=package_name)
     urwid.connect_signal(button, 'click', callback)
     return urwid.AttrMap(button, None, focus_map='reversed')
 
@@ -24,13 +29,50 @@ def menu(title, choices):
 
 
 def item_chosen(button):
-    response = urwid.Text(['You chose {}\n'.format(button.label)])
+    package = packages.get(button.label)
+    response = urwid.Text(['Installing {}...\n'.format(package['title'])])
+    install_thread = threading.Thread(target=install_package, args=[
+        package, QUEUE, DESTINATION_FOLDER, install_end_cb])
+    top.open_box(urwid.Filler(urwid.Pile([response])))
+    install_thread.start()
+    install_thread.join()
+    # done = menu_button('OK', exit_program)
+
+
+def install_end_cb(success):
+    logging.debug("SUCCESS: %s", (success))
+    top.keypress(None, 'esc')
     done = menu_button('OK', exit_program)
-    top.open_box(urwid.Filler(urwid.Pile([response, done])))
+    top.open_box(
+        urwid.Filler(
+            urwid.Pile([
+                urwid.Text('Installation ' + [
+                    'failed. Please, check logs for additional info.\n',
+                    'succeeded\n'
+                ][success]), done
+            ])))
+    logging.debug("Queue size: %s", (QUEUE.qsize()))
+    for _ in range(QUEUE.qsize()):
+        stdout, stderr = QUEUE.get()
+        logging.debug("STDOUT: %s\nSTDERR: %s\n" % (stdout, stderr))
+
+
+def not_available(button):
+    top.open_box(
+        urwid.Filler(
+            urwid.Pile([
+                urwid.Text("This feature is not available yet"),
+                menu_button('OK', lambda x: top.keypress(None, 'esc'))
+            ])))
 
 
 def exit_program(button):
     raise urwid.ExitMainLoop()
+
+
+def exit_on_q(key):
+    if key in ('q', 'Q'):
+        raise urwid.ExitMainLoop()
 
 
 class CascadingBoxes(urwid.WidgetPlaceholder):
@@ -51,8 +93,7 @@ class CascadingBoxes(urwid.WidgetPlaceholder):
             left=self.box_level * 3,
             right=(self.max_box_levels - self.box_level - 1) * 3,
             top=self.box_level * 2,
-            bottom=(self.max_box_levels - self.box_level - 1) * 2
-        )
+            bottom=(self.max_box_levels - self.box_level - 1) * 2)
         self.box_level += 1
 
     def keypress(self, size, key):
@@ -64,11 +105,16 @@ class CascadingBoxes(urwid.WidgetPlaceholder):
 
 
 packages = get_software_objects()
-menu_top = menu('Maker-Hub', [
-    sub_menu('Install software', [menu_button(name, item_chosen) for name in packages.keys()])
-])
+current_package = None
+menu_top = menu('Maker-Hub', [sub_menu(name, [menu_button("Install", item_chosen), menu_button("Show pinout", not_available)]) for name in packages.keys()])
 top = CascadingBoxes(menu_top)
+QUEUE = queue.Queue()
 
 
 def start_app():
-    urwid.MainLoop(top, palette=[('reversed', 'standout', '')]).run()
+    try:
+        loop = urwid.MainLoop(top, palette=[('reversed', 'standout', '')],
+                              unhandled_input=exit_on_q)
+        loop.run()
+    except KeyboardInterrupt:
+        loop.stop()
