@@ -11,7 +11,7 @@ from multiprocessing import Process, Queue
 logging.basicConfig(level=logging.DEBUG, filename='makerhub.log')
 MIN_SPACE = 50 * 2 ** 20  # 50 MB
 TEST_REMOTE_SERVER = 'www.google.com'
-SUPPORTED_DISTROS = ['raspbian', 'arch']  # TODO: Create a list of supporred distros
+SUPPORTED_DISTROS = ['raspbian', 'arch', 'debian']  # TODO: Create a list of supporred distros
 DESTINATION_FOLDER = '/opt'
 PACKAGES_FILE = 'resources/packages.json'
 DEFAULT_ICON_32_PATH = 'resources/media/pi-supply-logo-32x32.png'
@@ -43,7 +43,7 @@ def run_command(cmd_string, q, cwd=None):
             "Command \"{}\" failed to run. Output: \"{}\"".format(
                 cmd_string, str(exc)))
     else:
-        logging.info("Command \"%s\". Return code: %i", (cmd_string, proc.returncode))
+        logging.info("Command \"%s\". Return code: %i", cmd_string, proc.returncode)
         result = proc.communicate()
         q.put(result)
 
@@ -53,7 +53,7 @@ def is_apt_available():
     is_available = True
     for file in lock_files:
         is_available &= os.path.exists(file)
-    return True
+    return is_available
 
 
 def install_package(software_dict, queue, folder='/opt', callback=None):
