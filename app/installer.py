@@ -33,23 +33,25 @@ def get_software_objects():
     return packages
 
 
-def run_command(cmd_string, queue, cwd=None):
+def run_command(cmd_string, q, cwd=None):
     logging.debug(cmd_string)
     try:
         proc = Popen(cmd_string.split(' '), cwd=cwd, stdout=PIPE, stderr=PIPE)
         proc.wait()
-    except Exception as e:
-        raise InstallerException("Command \"{}\" failed to run. Output: \"{}\"".format(cmd_string, str(e)))
+    except Exception as exc:
+        raise InstallerException(
+            "Command \"{}\" failed to run. Output: \"{}\"".format(
+                cmd_string, str(exc)))
     else:
-        logging.info("Command \"{}\". Return code: {}".format(cmd_string, str(proc.returncode)))
+        logging.info("Command \"%s\". Return code: %i", (cmd_string, proc.returncode))
         result = proc.communicate()
-        queue.put(result)
+        q.put(result)
 
 
 def is_apt_available():
-    LOCK_FILES = ["/var/lib/apt/lists/lock", "/var/lib/dpkg/lock"]
+    lock_files = ["/var/lib/apt/lists/lock", "/var/lib/dpkg/lock"]
     is_available = True
-    for file in LOCK_FILES:
+    for file in lock_files:
         is_available &= os.path.exists(file)
     return True
 
@@ -64,7 +66,9 @@ def install_package(software_dict, queue, folder='/opt', callback=None):
         destination = os.path.join(folder, software_dict['name'])
         logging.info("Installing to %s", (destination))
         if os.path.exists(destination):
-            raise InstallerException("Folder \"{}\" exists. Cannot clone git repository.". format(destination))
+            raise InstallerException(
+                "Folder \"{}\" exists. Cannot clone git repository.".format(
+                    destination))
         # 1. Install packages
         if software_dict['package_dependencies']:
             if not is_apt_available():
@@ -84,10 +88,10 @@ def install_package(software_dict, queue, folder='/opt', callback=None):
         # 4. Run post-install commands
         for step in software_dict['post_install']:
             run_command(step['cmd'], queue, cwd=step.get('cwd'))
-    except InstallerException as e:
+    except InstallerException as exc:
         success = False
         # shutil.rmtree(destination, ignore_errors=True)  # Remove git destination folder
-        logging.error(str(e))
+        logging.error(str(exc))
 
     logging.info("Finished installing. Status: " + 'success' if success else 'failure')
     if callable(callback):
