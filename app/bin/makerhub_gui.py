@@ -3,7 +3,8 @@ import sys
 import threading
 import queue
 import logging
-from makerhub.installer import (install_package, check_system, get_software_objects,
+import os
+from makerhub.installer import (install_package, check_system, get_software_objects, IMAGES_FOLDER,
                                 DESTINATION_FOLDER, DEFAULT_ICON_32_PATH, DEFAULT_ICON_16_PATH, LOG_FILE)
 from PyQt5.QtWidgets import (QWidget, QApplication, QHBoxLayout, QTextEdit, QListWidgetItem,
                              QVBoxLayout, QLabel, QPushButton, QListWidget, QMainWindow,
@@ -87,7 +88,9 @@ class MainWidget(QMainWindow):
         self.currentProduct = self.softwareObjects[curr.text()]
         self.descriptionText.setText(self.currentProduct['description_full'])
         self.itemLabel.setText(self.currentProduct['title'])
-        self.itemIconLabel.setPixmap(QPixmap(self.currentProduct.get('icon_32x32', DEFAULT_ICON_32_PATH)))
+        self.itemIconLabel.setPixmap(QPixmap(
+            os.path.join(IMAGES_FOLDER, self.currentProduct.get('icon_32x32', DEFAULT_ICON_32_PATH))
+        ))
         self.githubLinkLabel.setText("<a href='{}'>Github</a>".format(self.currentProduct['github_link']))
         self.storeLinkLabel.setText("<a href='{}'>PiSupply</a>".format(self.currentProduct['website_link']))
 
@@ -111,7 +114,7 @@ class MainWidget(QMainWindow):
         for name, softDict in self.softwareObjects.items():
             item = QListWidgetItem(listWidget)
             item.setText(softDict['title'])
-            item.setIcon(QIcon(softDict.get('icon_16x16', DEFAULT_ICON_16_PATH)))
+            item.setIcon(QIcon(os.path.join(IMAGES_FOLDER, softDict.get('icon_16x16', DEFAULT_ICON_16_PATH))))
 
     def _setupLinksBox(self):
         linksBox = QVBoxLayout()
