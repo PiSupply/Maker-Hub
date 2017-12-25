@@ -17,7 +17,7 @@ setup(
 	data_files=[
         ('share/applications', ['data/makerhub-gui.desktop']),
         ('share/makerhub/images', glob.glob('data/media/*')),
-        ('share/makerhub/packages.json', ['data/packages.json']),
+        ('share/makerhub/', ['data/packages.json']),
     ],
 	scripts = ['bin/makerhub_gui.py', 'bin/makerhub_console.py'],
     install_requires=[
