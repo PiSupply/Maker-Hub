@@ -11,6 +11,7 @@ __pycache__/
 build/
 develop-eggs/
 dist/
+deb_dist/
 downloads/
 eggs/
 .eggs/
@@ -100,3 +101,5 @@ ENV/
 
 # VS Code
 .vscode/
+
+MANIFEST
