@@ -1,9 +1,10 @@
+#!/usr/bin/python3
 import sys
 import threading
 import queue
 import logging
-from installer import (install_package, check_system, get_software_objects,
-                       DESTINATION_FOLDER, DEFAULT_ICON_32_PATH, DEFAULT_ICON_16_PATH, LOG_FILE)
+from makerhub.installer import (install_package, check_system, get_software_objects,
+                                DESTINATION_FOLDER, DEFAULT_ICON_32_PATH, DEFAULT_ICON_16_PATH, LOG_FILE)
 from PyQt5.QtWidgets import (QWidget, QApplication, QHBoxLayout, QTextEdit, QListWidgetItem,
                              QVBoxLayout, QLabel, QPushButton, QListWidget, QMainWindow,
                              QErrorMessage)

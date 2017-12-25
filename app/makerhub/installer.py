@@ -13,10 +13,14 @@ MIN_SPACE = 50 * 2 ** 20  # 50 MB
 TEST_REMOTE_SERVER = 'www.google.com'
 SUPPORTED_DISTROS = ['raspbian', 'arch', 'debian']  # TODO: Create a list of supporred distros
 DESTINATION_FOLDER = '/opt'
-PACKAGES_FILE = 'resources/packages.json'
-DEFAULT_ICON_32_PATH = 'resources/media/pi-supply-logo-32x32.png'
-DEFAULT_ICON_16_PATH = 'resources/media/pi-supply-logo-16x16.png'
+
+DATA_FOLDER = '/usr/share/makerhub' if os.path.exists('/usr/share/makerhub') else './data'
+IMAGES_FOLDER = os.path.join(DATA_FOLDER, 'images/')
+PACKAGES_FILE = os.path.join(DATA_FOLDER, 'packages.json')
+DEFAULT_ICON_32_PATH = os.path.join(DATA_FOLDER, 'images/pi-supply-logo-32x32.png')
+DEFAULT_ICON_16_PATH = os.path.join(DATA_FOLDER, 'images/pi-supply-logo-16x16.png')
 LOG_FILE = os.path.join(os.getcwd(), 'makerhub.log')
+
 PYTHON_VERSION = platform.python_version()[0]
 
 

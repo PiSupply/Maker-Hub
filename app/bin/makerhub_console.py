@@ -1,8 +1,9 @@
+#!/usr/bin/python3
 import threading
 import logging
 import queue
 import urwid
-from installer import get_software_objects, install_package, DESTINATION_FOLDER
+from makerhub.installer import get_software_objects, install_package, DESTINATION_FOLDER
 
 logging.basicConfig(level=logging.DEBUG)
 
