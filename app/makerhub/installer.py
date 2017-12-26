@@ -8,7 +8,6 @@ from subprocess import Popen, PIPE
 from multiprocessing import Process, Queue
 
 
-logging.basicConfig(level=logging.DEBUG, filename='makerhub.log')
 MIN_SPACE = 50 * 2 ** 20  # 50 MB
 TEST_REMOTE_SERVER = 'www.google.com'
 SUPPORTED_DISTROS = ['raspbian', 'arch', 'debian']  # TODO: Create a list of supporred distros
@@ -20,6 +19,7 @@ PACKAGES_FILE = os.path.join(DATA_FOLDER, 'packages.json')
 DEFAULT_ICON_32_PATH = os.path.join(DATA_FOLDER, 'images/pi-supply-logo-32x32.png')
 DEFAULT_ICON_16_PATH = os.path.join(DATA_FOLDER, 'images/pi-supply-logo-16x16.png')
 LOG_FILE = os.path.join(os.getcwd(), 'makerhub.log')
+logging.basicConfig(level=logging.DEBUG, filename=LOG_FILE)
 
 PYTHON_VERSION = platform.python_version()[0]
 
@@ -42,6 +42,10 @@ def run_command(cmd_string, q, cwd=None):
     try:
         proc = Popen(cmd_string.split(' '), cwd=cwd, stdout=PIPE, stderr=PIPE)
         proc.wait()
+        if proc.returncode != 0:
+            stdout, stderr = proc.communicate()
+            raise InstallerException("Non-zero returncode: {}. STDOUT: {}. STDERR:{}. Command: {}".format(
+                proc.returncode, stdout, stderr, cmd_string))
     except Exception as exc:
         raise InstallerException(
             "Command \"{}\" failed to run. Output: \"{}\"".format(
