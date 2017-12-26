@@ -102,4 +102,6 @@ ENV/
 # VS Code
 .vscode/
 
+# Packaging related
 MANIFEST
+app/MakerHub-*.tar.gz
