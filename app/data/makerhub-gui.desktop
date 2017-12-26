@@ -5,5 +5,5 @@ Name=MakerHub
 Exec=/usr/bin/makerhub_gui.py
 Icon=/usr/share/makerhub/images/makerhub.png
 Terminal=false
-Categories=Accessories;Qt;
+Categories=Utility;Qt;
 Comment=Software and information suite for Pi Supply products
