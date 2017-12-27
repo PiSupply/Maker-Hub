@@ -8,7 +8,7 @@ from makerhub.installer import (install_package, check_system, get_software_obje
                                 DESTINATION_FOLDER, DEFAULT_ICON_32_PATH, DEFAULT_ICON_16_PATH, LOG_FILE)
 from PyQt5.QtWidgets import (QWidget, QApplication, QHBoxLayout, QTextEdit, QListWidgetItem,
                              QVBoxLayout, QLabel, QPushButton, QListWidget, QMainWindow,
-                             QErrorMessage)
+                             QErrorMessage, QMessageBox)
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt, pyqtSignal, QObject, QSize
 
@@ -104,7 +104,10 @@ class MainWidget(QMainWindow):
 
     def _installEndCallback(self, success):
         self.UISignals.installEndSignal.emit()
-        if not success:
+        if success:
+            QMessageBox.question(self, "Installation success", "Successfully installed {}".format(self.currentProduct['name']),
+                                 QMessageBox.Ok)
+        else:
             err_dialog = QErrorMessage()
             err_dialog.showMessage('Installation failed. Please, check logs at {}'.format(LOG_FILE))
             err_dialog.exec()
