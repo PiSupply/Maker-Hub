@@ -10,7 +10,7 @@ from multiprocessing import Process, Queue
 
 MIN_SPACE = 50 * 2 ** 20  # 50 MB
 TEST_REMOTE_SERVER = 'www.google.com'
-SUPPORTED_DISTROS = ['raspbian', 'arch', 'debian']  # TODO: Create a list of supporred distros
+SUPPORTED_DISTROS = ['raspbian', 'arch', 'debian', 'ubuntu']  # TODO: Create a list of supporred distros
 DESTINATION_FOLDER = '/opt'
 
 DATA_FOLDER = '/usr/share/makerhub' if os.path.exists('/usr/share/makerhub') else './data'
@@ -33,8 +33,7 @@ class InstallerException(Exception):
 def get_software_objects():
     with open(PACKAGES_FILE, 'r') as f:
         content = json.load(f)
-    packages = {item['title']: item for item in content['packages']}
-    return packages
+    return content["packages"]
 
 
 def run_command(cmd_string, q, cwd=None):
