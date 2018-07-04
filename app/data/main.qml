@@ -28,6 +28,7 @@ ApplicationWindow
             {
                 property string description: model.description_full
                 property string icon: model.icon_16x16
+                property string post_install: model.post_install
                 property string website_link: model.website_link
                 property string github_link: model.github_link
 
@@ -134,10 +135,15 @@ ApplicationWindow
                 {
                     id: firstbutton
                     text: "More info"
+                    onClicked: testModel.printText("test")
                 }
                 Button
-                {
+                {   id: track
                     text: "Install"
+                    onClicked:
+                        {
+                        Api.fun(list.currentItem.post_install)
+                        }
                 }
             }
         }

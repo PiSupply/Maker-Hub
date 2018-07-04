@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from distutils.core import setup
+from setuptools import setup
 import glob
 import os
 import sys
@@ -16,12 +16,13 @@ setup(
 	py_modules=[''],
 	data_files=[
         ('share/applications', ['data/makerhub-gui.desktop']),
-        ('share/makerhub/images', glob.glob('data/media/*')),
+        ('share/makerhub/data/media', glob.glob('data/media/*')),
         ('share/makerhub/', ['data/packages.json']),
+	('share/makerhub/data',['data/main.qml']),
     ],
 	scripts = ['bin/makerhub_gui.py', 'bin/makerhub_console.py'],
     install_requires=[
-        "urwid >= 1.3.1",
-        "PyQt5 >= 5.0",
+	"urwid >= 1.3.1",
+	"PyQt5 >= 5.0",
     ],
 	)

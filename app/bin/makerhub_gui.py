@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 import sys
-import threading
-import queue
 import logging
 import os
 from makerhub import installer
@@ -9,6 +7,8 @@ from PyQt5.QtCore import QUrl, pyqtSlot, QObject, pyqtProperty, QAbstractListMod
 from PyQt5.QtQuick import QQuickView, QQuickItem
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtQml import qmlRegisterType, qmlRegisterSingletonType
+from os import system
+
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -18,7 +18,8 @@ class ProjectsModel(QAbstractListModel):
     DescriptionRole = Qt.UserRole + 2
     IconRole = Qt.UserRole + 3
     WebsiteLinkRole = Qt.UserRole + 4
-    GithubLinkRole = Qt.UserRole +5
+    GithubLinkRole = Qt.UserRole + 5
+    PostInstallRole = Qt.UserRole + 6
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -26,6 +27,7 @@ class ProjectsModel(QAbstractListModel):
         self._roles = {self.NameRole: "name".encode("utf-8"),
                        self.DescriptionRole: "description_full".encode("utf-8"),
                        self.IconRole: "icon_16x16".encode("utf-8"),
+                       self.PostInstallRole: "post_install".encode("utf-8"),
                        self.WebsiteLinkRole: "website_link".encode("utf-8"),
                        self.GithubLinkRole: "github_link".encode("utf-8")}
 
@@ -43,6 +45,12 @@ class Api(QObject):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    @pyqtSlot(str)
+    def fun(self, inst_prop):
+        checkInstall = 0
+        checkInstall=system(inst_prop)
+        print(checkInstall)
+
 
 def createapi(engine, script_engine):
     return Api()
@@ -55,10 +63,13 @@ def run():
     qmlRegisterType(ProjectsModel, "Makerhub", 1, 0, "ProjectsModel")
 
     v = QQuickView()
-    v.setSource(QUrl("data/main.qml"))
-    # v.show()
+    if os.path.exists("data/main.qml"):
+        v.setSource(QUrl("data/main.qml"))
+    else:
+        v.setSource(QUrl("/usr/share/makerhub/data/main.qml"))
+    #v.show()
 
-    app.exec()
+    app.exec_()
 
 
 if __name__ == '__main__':

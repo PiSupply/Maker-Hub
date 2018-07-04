@@ -16,7 +16,7 @@
 			},
 			"package_dependencies": ["git"],
 			"interfaces": ["I2C"],
-			"post_install": [{"cmd": "python setup.py install", "cwd": "/opt/flick/flick"}],
+			"post_install": "whoami",
 			"installation_script_link": "https://pisupp.ly/flickcode",
 			"website_link": "https://www.pi-supply.com/brand/pi-supply/flick/",
 			"github_link": "https://github.com/PiSupply/Flick"
@@ -60,7 +60,7 @@
 			},
 			"package_dependencies": [],
 			"interfaces": [],
-			"post_install": [],
+			"post_install": "pkexec --user root apt install pijuice-gui pijuice-base",
 			"installation_script_link": null,
 			"website_link": "https://www.pi-supply.com/?s=pijuice&post_type=product",
 			"github_link": "https://github.com/PiSupply/PiJuice"
