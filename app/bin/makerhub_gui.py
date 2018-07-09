@@ -2,11 +2,14 @@
 import sys
 import logging
 import os
+import subprocess
 from makerhub import installer
 from PyQt5.QtCore import QUrl, pyqtSlot, QObject, pyqtProperty, QAbstractListModel, Qt
 from PyQt5.QtQuick import QQuickView, QQuickItem
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtQml import qmlRegisterType, qmlRegisterSingletonType
+from PyQt5.QtQml import QQmlApplicationEngine,QQmlEngine, QQmlComponent
+from PyQt5.QtWidgets import QErrorMessage, QApplication, QMessageBox
 from os import system
 
 
@@ -46,10 +49,19 @@ class Api(QObject):
         super().__init__(*args, **kwargs)
 
     @pyqtSlot(str)
-    def fun(self, inst_prop):
+    def installing(self, inst_prop):
         checkInstall = 0
-        checkInstall=system(inst_prop)
+        checkInstall = system(inst_prop)
+        err_dialog = QErrorMessage()
         print(checkInstall)
+        if checkInstall == 0:
+            err_dialog.showMessage("Installation successful")
+            err_dialog.exec()
+        else:
+            err_dialog.showMessage("Installation failed")
+            err_dialog.exec()
+
+
 
 
 def createapi(engine, script_engine):
@@ -57,18 +69,18 @@ def createapi(engine, script_engine):
 
 
 def run():
-    app = QGuiApplication(sys.argv)
+    app = QApplication(sys.argv) #app = QGuiApplication(sys.argv)
 
     qmlRegisterSingletonType(Api, 'Makerhub', 1, 0, 'Api', createapi)
     qmlRegisterType(ProjectsModel, "Makerhub", 1, 0, "ProjectsModel")
 
-    v = QQuickView()
-    if os.path.exists("data/main.qml"):
-        v.setSource(QUrl("data/main.qml"))
-    else:
-        v.setSource(QUrl("/usr/share/makerhub/data/main.qml"))
-    #v.show()
+    path = "data/main.qml"
 
+    if not os.path.exists(path):
+        path = "/usr/share/makerhub/data/main.qml"
+
+    engine = QQmlApplicationEngine()
+    engine.load(path)
     app.exec_()
 
 

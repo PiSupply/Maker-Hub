@@ -142,7 +142,7 @@ ApplicationWindow
                     text: "Install"
                     onClicked:
                         {
-                        Api.fun(list.currentItem.post_install)
+                        Api.installing(list.currentItem.post_install)
                         }
                 }
             }
