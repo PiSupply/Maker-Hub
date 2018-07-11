@@ -3,6 +3,7 @@ import sys
 import logging
 import os
 import subprocess
+import requests
 from makerhub import installer
 from PyQt5.QtCore import QUrl, pyqtSlot, QObject, pyqtProperty, QAbstractListModel, Qt
 from PyQt5.QtQuick import QQuickView, QQuickItem
@@ -50,16 +51,23 @@ class Api(QObject):
 
     @pyqtSlot(str)
     def installing(self, inst_prop):
-        checkInstall = 0
-        checkInstall = system(inst_prop)
-        err_dialog = QErrorMessage()
-        print(checkInstall)
-        if checkInstall == 0:
-            err_dialog.showMessage("Installation successful")
-            err_dialog.exec()
-        else:
-            err_dialog.showMessage("Installation failed")
-            err_dialog.exec()
+        r = requests.get(inst_prop)
+        with open('/tmp/install.sh','wb') as f:
+            f.write(r.content)
+
+        system("x-terminal-emulator -e sudo bash /tmp/install.sh")
+
+        #checkInstall = 0
+        #command = "lxterminal -e "
+        #checkInstall = system(command + inst_prop)
+        #err_dialog = QErrorMessage()
+       # print(checkInstall)
+        #if checkInstall == 0:
+           # err_dialog.showMessage("Installation successful")
+            #err_dialog.exec()
+       # else:
+           # err_dialog.showMessage("Installation failed")
+            #err_dialog.exec()
 
 
 

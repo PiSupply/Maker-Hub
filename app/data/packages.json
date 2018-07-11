@@ -16,7 +16,7 @@
 			},
 			"package_dependencies": ["git"],
 			"interfaces": ["I2C"],
-			"post_install": "pkexec --user root curl -sSL https://pisupp.ly/flickcode | sudo bash",
+			"post_install": "https://raw.githubusercontent.com/PiSupply/Flick/master/install.sh",
 			"installation_script_link": "https://pisupp.ly/flickcode",
 			"website_link": "https://www.pi-supply.com/brand/pi-supply/flick/",
 			"github_link": "https://github.com/PiSupply/Flick"
@@ -37,7 +37,7 @@
 			},
 			"package_dependencies": ["git"],
 			"interfaces": ["I2C"],
-			"post_install": "pkexec --user root curl -sSL https://pisupp.ly/jb-rotarycode | sudo bash",
+			"post_install": "https://raw.githubusercontent.com/PiSupply/JustBoom/master/install.sh",
 			"installation_script_link": "https://raw.githubusercontent.com/PiSupply/JustBoom/master/install.sh",
 			"website_link": "https://www.justboom.co/",
 			"github_link": "https://github.com/PiSupply/JustBoom"
@@ -58,7 +58,7 @@
 			},
 			"package_dependencies": [],
 			"interfaces": [],
-			"post_install": "pkexec --user root apt install -y -f pijuice-gui pijuice-base",
+			"post_install": "https://raw.githubusercontent.com/PiSupply/PiJuice/master/install.sh",
 			"installation_script_link": null,
 			"website_link": "https://www.pi-supply.com/?s=pijuice&post_type=product",
 			"github_link": "https://github.com/PiSupply/PiJuice"
@@ -79,7 +79,7 @@
 			},
 			"package_dependencies": ["git", "python-pil", "python-smbus", "python-dateutil", "bc", "i2c-tools", "fonts-freefont-ttf"],
 			"interfaces": ["SPI", "I2C"],
-			"post_install": "pkexec --user root curl -sSL https://pisupp.ly/papiruscode | sudo bash",
+			"post_install": "https://raw.githubusercontent.com/PiSupply/PaPiRus/master/install",
 			"installation_script_link": "https://pisupp.ly/papiruscode",
 			"website_link": "https://www.pi-supply.com/product/papirus-epaper-eink-screen-hat-for-raspberry-pi/",
 			"github_link": "https://github.com/PiSupply/PaPiRus"
@@ -100,7 +100,7 @@
 			},
 			"package_dependencies": [],
 			"interfaces": ["I2C"],
-			"post_install": "pkexec --user root curl -sSL https://pisupp.ly/brightpicode | bash",
+			"post_install": "https://raw.githubusercontent.com/PiSupply/Bright-Pi/master/install.sh",
 			"installation_script_link": "https://pisupp.ly/brightpicode",
 			"website_link": "https://www.pi-supply.com/product/bright-pi-bright-white-ir-camera-light-raspberry-pi/",
 			"github_link": "https://github.com/PiSupply/Bright-Pi"
