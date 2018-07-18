@@ -1,11 +1,13 @@
 import os
 import logging
 import shutil
+import requests
 import platform
 import socket
 import json
 from subprocess import Popen, PIPE
 from multiprocessing import Process, Queue
+from os import system
 
 
 MIN_SPACE = 50 * 2 ** 20  # 50 MB
@@ -63,47 +65,59 @@ def is_apt_available():
     return is_available
 
 
-def install_package(software_dict, queue, folder='/opt', callback=None):
-    interface_commands = {
-        'I2C': 'raspi-config nonint do_i2c 0',
-        'SPI': 'raspi-config nonint do_spi 0',
-    }
-    success = True
-    try:
-        destination = os.path.join(folder, software_dict['name'])
-        logging.info("Installing to %s", (destination))
-        if os.path.exists(destination):
-            raise InstallerException(
-                "Folder \"{}\" exists. Cannot clone git repository.".format(
-                    destination))
-        # 1. Install packages
-        if software_dict['package_dependencies']:
-            if not is_apt_available():
-                raise InstallerException("APT is being used by another program. Try again later.")
-            packages_str = 'apt-get install -y ' + ' '.join(software_dict['package_dependencies'])
-            run_command(packages_str, queue)
+def install_package(name_packeges,packages):
 
-        # 2. Enable interfaces (I2C, SPI, ...)
-        for interface in software_dict['interfaces']:
-            run_command(interface_commands.get(interface), queue)
+    for f in packages:
+        if f['name'] == name_packeges:
+            break
 
-        # 3. Git clone to /opt/<name>
-        clone_cmd = "git clone --depth=1 {github_link}.git {destination}".format(
-            github_link=software_dict['github_link'], destination=destination.lower())
-        run_command(clone_cmd, queue)
 
-        # 4. Run post-install commands
-        for step in software_dict['post_install']:
-            run_command(step['cmd'], queue, cwd=step.get('cwd'))
-    except InstallerException as exc:
-        success = False
-        # shutil.rmtree(destination, ignore_errors=True)  # Remove git destination folder
-        logging.error(str(exc))
+    r = requests.get(f['post_install'])
+    with open('/tmp/install.sh', 'wb') as f:
+        f.write(r.content)
 
-    logging.info("Finished installing. Status: " + 'success' if success else 'failure')
-    if callable(callback):
-        logging.info("Executing callback")
-        callback(success)
+    system("x-terminal-emulator -e sudo bash /tmp/install.sh")
+
+    # interface_commands = {
+    #     'I2C': 'raspi-config nonint do_i2c 0',
+    #     'SPI': 'raspi-config nonint do_spi 0',
+    # }
+    # success = True
+    # try:
+    #     destination = os.path.join(folder, software_dict['name'])
+    #     logging.info("Installing to %s", (destination))
+    #     if os.path.exists(destination):
+    #         raise InstallerException(
+    #             "Folder \"{}\" exists. Cannot clone git repository.".format(
+    #                 destination))
+    #     # 1. Install packages
+    #     if software_dict['package_dependencies']:
+    #         if not is_apt_available():
+    #             raise InstallerException("APT is being used by another program. Try again later.")
+    #         packages_str = 'apt-get install -y ' + ' '.join(software_dict['package_dependencies'])
+    #         run_command(packages_str, queue)
+    #
+    #     # 2. Enable interfaces (I2C, SPI, ...)
+    #     for interface in software_dict['interfaces']:
+    #         run_command(interface_commands.get(interface), queue)
+    #
+    #     # 3. Git clone to /opt/<name>
+    #     clone_cmd = "git clone --depth=1 {github_link}.git {destination}".format(
+    #         github_link=software_dict['github_link'], destination=destination.lower())
+    #     run_command(clone_cmd, queue)
+    #
+    #     # 4. Run post-install commands
+    #     for step in software_dict['post_install']:
+    #         run_command(step['cmd'], queue, cwd=step.get('cwd'))
+    # except InstallerException as exc:
+    #     success = False
+    #     # shutil.rmtree(destination, ignore_errors=True)  # Remove git destination folder
+    #     logging.error(str(exc))
+    #
+    # logging.info("Finished installing. Status: " + 'success' if success else 'failure')
+    # if callable(callback):
+    #     logging.info("Executing callback")
+    #     callback(success)
 
 
 def check_system():

@@ -5,12 +5,13 @@ import queue
 import urwid
 from makerhub.installer import get_software_objects, install_package, DESTINATION_FOLDER
 
+
 logging.basicConfig(level=logging.DEBUG)
 
 
 def menu_button(caption, callback, package_name=None):
     button = urwid.Button(caption, user_data=package_name)
-    urwid.connect_signal(button, 'click', callback)
+    urwid.connect_signal(button, 'click', callback, package_name)
     return urwid.AttrMap(button, None, focus_map='reversed')
 
 
@@ -18,9 +19,11 @@ def sub_menu(caption, choices):
     contents = menu(caption, choices)
 
     def open_menu(button):
+        global someGlobalVar
+        someGlobalVar = button.label
         return top.open_box(contents)
 
-    return menu_button([caption, "..."], open_menu)
+    return menu_button([caption], open_menu)
 
 
 def menu(title, choices):
@@ -29,15 +32,14 @@ def menu(title, choices):
     return urwid.ListBox(urwid.SimpleFocusListWalker(body))
 
 
-def item_chosen(button):
-    package = packages.get(button.label)
+def item_chosen(button,package= None):
+
     response = urwid.Text(['Installing {}...\n'.format(package['title'])])
-    install_thread = threading.Thread(target=install_package, args=[
-        package, QUEUE, DESTINATION_FOLDER, install_end_cb])
+    install_thread = threading.Thread(target=install_package, args=[package['name'],packages])
     top.open_box(urwid.Filler(urwid.Pile([response])))
     install_thread.start()
     install_thread.join()
-    # done = menu_button('OK', exit_program)
+    done = menu_button('OK', exit_program)
 
 
 def install_end_cb(success):
@@ -107,7 +109,7 @@ class CascadingBoxes(urwid.WidgetPlaceholder):
 
 packages = get_software_objects()
 current_package = None
-menu_top = menu('Maker-Hub', [sub_menu(name, [menu_button("Install", item_chosen), menu_button("Show pinout", not_available)]) for name in packages.keys()])
+menu_top = menu('Maker-Hub', [sub_menu(p["name"], [menu_button("Install", item_chosen, p), menu_button("Show pinout", not_available)]) for p in packages])
 top = CascadingBoxes(menu_top)
 QUEUE = queue.Queue()
 
@@ -119,3 +121,7 @@ def start_app():
         loop.run()
     except KeyboardInterrupt:
         loop.stop()
+
+
+if __name__ == "__main__":
+    start_app()
