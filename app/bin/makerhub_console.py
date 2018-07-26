@@ -3,13 +3,18 @@ import threading
 import logging
 import queue
 import urwid
-from makerhub.installer import get_software_objects, install_package, DESTINATION_FOLDER
+import requests
+from os import system
+from makerhub import installer
+from makerhub.installer import get_software_objects, install_package, uninstall_package, DESTINATION_FOLDER
+
 
 
 logging.basicConfig(level=logging.DEBUG)
 
 
 def menu_button(caption, callback, package_name=None):
+
     button = urwid.Button(caption, user_data=package_name)
     urwid.connect_signal(button, 'click', callback, package_name)
     return urwid.AttrMap(button, None, focus_map='reversed')
@@ -19,8 +24,6 @@ def sub_menu(caption, choices):
     contents = menu(caption, choices)
 
     def open_menu(button):
-        global someGlobalVar
-        someGlobalVar = button.label
         return top.open_box(contents)
 
     return menu_button([caption], open_menu)
@@ -32,14 +35,48 @@ def menu(title, choices):
     return urwid.ListBox(urwid.SimpleFocusListWalker(body))
 
 
-def item_chosen(button,package= None):
+def item_chosen(button, package= None):
 
     response = urwid.Text(['Installing {}...\n'.format(package['title'])])
     install_thread = threading.Thread(target=install_package, args=[package['name'],packages])
-    top.open_box(urwid.Filler(urwid.Pile([response])))
+    done = menu_button('OK', exit_program)
+    top.open_box(urwid.Filler(urwid.Pile([response,done])))
     install_thread.start()
     install_thread.join()
-    done = menu_button('OK', exit_program)
+
+
+def item_chosen_txt (button, package = None):
+    # text_list = package['description_short']
+    my_file = open("/tmp/information.txt", "w")
+    my_file.write(package['description_full'])
+    my_file.close()
+    response = urwid.Text("information in new console")
+    done = menu_button(u'exit', exit_program)
+    top.open_box(urwid.Filler(urwid.Pile([response, done])))
+    system("x-terminal-emulator -e less /tmp/information.txt")
+    #term = urwid.Terminal(["echo " + package['description_full']])
+    #top.open_box(term)
+
+def item_chosen_uninst(button, package = None):
+    check_install = None
+    response = None
+    done = menu_button(u'exit', exit_program)
+    check_install = system("test -f " + package['check_link'])
+    if check_install == 0:
+        response = urwid.Text(package['title']+" uninstalling....")
+        install_thread = threading.Thread(target=uninstall_package, args=[package['name'], packages])
+        install_thread.start()
+        install_thread.join()
+    else:
+        response = urwid.Text("This package is not installed")
+
+    top.open_box(urwid.Filler(urwid.Pile([response, done])))
+
+
+
+
+
+
 
 
 def install_end_cb(success):
@@ -109,7 +146,7 @@ class CascadingBoxes(urwid.WidgetPlaceholder):
 
 packages = get_software_objects()
 current_package = None
-menu_top = menu('Maker-Hub', [sub_menu(p["name"], [menu_button("Install", item_chosen, p), menu_button("Show pinout", not_available)]) for p in packages])
+menu_top = menu('Maker-Hub', [sub_menu(p["name"], [menu_button("Install", item_chosen, p),menu_button("Uninstall", item_chosen_uninst, p), menu_button("Information", item_chosen_txt, p)]) for p in packages])
 top = CascadingBoxes(menu_top)
 QUEUE = queue.Queue()
 

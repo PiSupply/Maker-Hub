@@ -26,11 +26,15 @@ ApplicationWindow
             id: list_row
             Item
             {
+                property string name: model.name
                 property string description: model.description_full
                 property string icon: model.icon_16x16
                 property string post_install: model.post_install
                 property string website_link: model.website_link
                 property string github_link: model.github_link
+                property string post_uninstall: model.post_uninstall
+                property string check_link: model.check_link
+
 
                 width: parent.width
                 height: childrenRect.height
@@ -134,8 +138,11 @@ ApplicationWindow
                 Button
                 {
                     id: firstbutton
-                    text: "More info"
-                    onClicked: testModel.printText("test")
+                    text: "Uninstall"
+                    onClicked:
+                    {
+                    Api.uninstalling(list.currentItem.post_uninstall,list.currentItem.check_link)
+                    }
                 }
                 Button
                 {   id: track

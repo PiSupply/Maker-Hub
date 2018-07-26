@@ -4,7 +4,7 @@
 			"name": "flick",
 			"title": "Flick",
 			"description_short": "Swipe, tap or flick your wrist to control your Raspberry Pi with Flick!",
-			"description_full": "Swipe, tap or flick your wrist to control your Raspberry Pi with Flick!\n\nFlick is a range of  3D tracking and gesture boards for the Raspberry Pi, Pi Zero and I2C devices. These boards let you control the Raspberry Pi computer as if by magic! It uses technology that enables the PCB to detect your gestures from up to 15cm away in 3D space. Draw a circle with your hand – it will track it.\n\nPlug and play functionality allows you to get up and running within minutes. Use our software libraries (complete with one line installer) to fully explore what you can do the boards. Control your computer, TV, music system and more with your hands. Fully CE and FCC tested and approved.\n\nSwipe, tap or flick your wrist to control your Raspberry Pi with Flick!\n\nFlick is a range of 3D tracking and gesture boards for the Raspberry Pi, Pi Zero and I2C devices. These boards let you control the Raspberry Pi computer as if by magic! It uses technology that enables the PCB to detect your gestures from up to 15cm away in 3D space. Draw a circle with your hand – it will track it.\n\nPlug and play functionality allows you to get up and running within minutes. Use our software libraries (complete with one line installer) to fully explore what you can do the boards. Control your computer, TV, music system and more with your hands. Fully CE and FCC tested and approved.",
+			"description_full": "Swipe, tap or flick your wrist to control your Raspberry Pi with Flick!\n\nFlick is a range of 3D tracking and gesture boards for the Raspberry Pi, Pi Zero and I2C devices. These boards let you control the Raspberry Pi computer as if by magic! It uses technology that enables the PCB to detect your gestures from up to 15cm away in 3D space. Draw a circle with your hand – it will track it.\n\nPlug and play functionality allows you to get up and running within minutes. Use our software libraries (complete with one line installer) to fully explore what you can do the boards. Control your computer, TV, music system and more with your hands. Fully CE and FCC tested and approved.\n\nSwipe, tap or flick your wrist to control your Raspberry Pi with Flick!\n\nFlick is a range of 3D tracking and gesture boards for the Raspberry Pi, Pi Zero and I2C devices. These boards let you control the Raspberry Pi computer as if by magic! It uses technology that enables the PCB to detect your gestures from up to 15cm away in 3D space. Draw a circle with your hand – it will track it.\n\nPlug and play functionality allows you to get up and running within minutes. Use our software libraries (complete with one line installer) to fully explore what you can do the boards. Control your computer, TV, music system and more with your hands. Fully CE and FCC tested and approved.",
 			"icon_16x16": "flick.png",
 			"icon_32x32": "pi-supply-logo-32x32.png",
 			"icon_full": "pi-supply-logo.png",
@@ -17,6 +17,8 @@
 			"package_dependencies": ["git"],
 			"interfaces": ["I2C"],
 			"post_install": "https://raw.githubusercontent.com/PiSupply/Flick/master/install.sh",
+			"post_uninstall": "https://raw.githubusercontent.com/PiSupply/Flick/master/uninstall.sh",
+			"check_link": "/usr/local/bin/flick-demo",
 			"installation_script_link": "https://pisupp.ly/flickcode",
 			"website_link": "https://www.pi-supply.com/brand/pi-supply/flick/",
 			"github_link": "https://github.com/PiSupply/Flick"
@@ -38,6 +40,8 @@
 			"package_dependencies": ["git"],
 			"interfaces": ["I2C"],
 			"post_install": "https://raw.githubusercontent.com/PiSupply/JustBoom/master/install.sh",
+			"post_uninstall": "https://raw.githubusercontent.com/PiSupply/JustBoom/master/uninstall.sh",
+			"check_link": "/opt/justboom/jb-rotary.py",
 			"installation_script_link": "https://raw.githubusercontent.com/PiSupply/JustBoom/master/install.sh",
 			"website_link": "https://www.justboom.co/",
 			"github_link": "https://github.com/PiSupply/JustBoom"
@@ -59,6 +63,8 @@
 			"package_dependencies": [],
 			"interfaces": [],
 			"post_install": "https://raw.githubusercontent.com/PiSupply/PiJuice/master/install.sh",
+			"post_uninstall": "https://raw.githubusercontent.com/PiSupply/PiJuice/master/uninstall.sh",
+			"check_link": "/usr/bin/pijuice_cli.py",
 			"installation_script_link": null,
 			"website_link": "https://www.pi-supply.com/?s=pijuice&post_type=product",
 			"github_link": "https://github.com/PiSupply/PiJuice"
@@ -80,6 +86,8 @@
 			"package_dependencies": ["git", "python-pil", "python-smbus", "python-dateutil", "bc", "i2c-tools", "fonts-freefont-ttf"],
 			"interfaces": ["SPI", "I2C"],
 			"post_install": "https://raw.githubusercontent.com/PiSupply/PaPiRus/master/install",
+			"post_uninstall": "https://raw.githubusercontent.com/PiSupply/PaPiRus/master/uninstall.sh",
+			"check_link": "/usr/local/bin/papirus-test",
 			"installation_script_link": "https://pisupp.ly/papiruscode",
 			"website_link": "https://www.pi-supply.com/product/papirus-epaper-eink-screen-hat-for-raspberry-pi/",
 			"github_link": "https://github.com/PiSupply/PaPiRus"
@@ -101,6 +109,8 @@
 			"package_dependencies": [],
 			"interfaces": ["I2C"],
 			"post_install": "https://raw.githubusercontent.com/PiSupply/Bright-Pi/master/install.sh",
+			"post_uninstall": "https://raw.githubusercontent.com/PiSupply/Bright-Pi/master/uninstall.sh",
+			"check_link": "/usr/local/bin/brightpi-test.py",
 			"installation_script_link": "https://pisupp.ly/brightpicode",
 			"website_link": "https://www.pi-supply.com/product/bright-pi-bright-white-ir-camera-light-raspberry-pi/",
 			"github_link": "https://github.com/PiSupply/Bright-Pi"

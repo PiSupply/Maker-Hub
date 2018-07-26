@@ -64,6 +64,16 @@ def is_apt_available():
         is_available &= os.path.exists(file)
     return is_available
 
+def uninstall_package(name_packages,packages):
+    for f in packages:
+        if f['name'] == name_packages:
+            break
+
+    r = requests.get(f['post_uninstall'])
+    with open('/tmp/uninstall.sh', 'wb') as f:
+        f.write(r.content)
+
+    system("x-terminal-emulator -e sudo bash /tmp/uninstall.sh")
 
 def install_package(name_packeges,packages):
 
