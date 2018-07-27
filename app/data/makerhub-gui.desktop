@@ -2,7 +2,7 @@
 Version=0.1.0
 Type=Application
 Name=MakerHub
-Exec=gksudo /usr/bin/makerhub_gui.py
+Exec=/usr/bin/makerhub_gui.py
 Icon=/usr/share/makerhub/images/makerhub.png
 Terminal=false
 Categories=Utility;Qt;

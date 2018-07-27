@@ -60,7 +60,7 @@ class Api(QObject):
     @pyqtSlot(str)
     def installing(self, inst_prop):
         r = requests.get(inst_prop)
-        with open('/tmp/install.sh','wb') as f:
+        with open('/tmp/install.sh', 'wb') as f:
             f.write(r.content)
 
 
