@@ -6,9 +6,9 @@ import sys
 
 setup(
 	name = "MakerHub",
-	version = "0.1.0",
-	author = "Denis Khrutsky",
-	author_email = "denis.xpy@gmail.com",
+	version = "0.2.0",
+	author = "Ilya Starodubtsev",
+	author_email = "kentbrokmen55@gmail.com",
 	description = "Installer for PiSupply products software",
 	url = "https://github.com/PiSupply/MakerHub",
 	license='GPL v2',
@@ -24,5 +24,6 @@ setup(
     install_requires=[
 	"urwid >= 1.3.1",
 	"PyQt5 >= 5.0",
+
     ],
 	)
